@@ -12,6 +12,7 @@ let finished = false
 const boardEl = document.getElementById("board")
 const statusEl = document.getElementById("status")
 const newGameBtn = document.getElementById("newGame")
+const mobileInput = document.getElementById("mobileInput")
 
 async function loadWords() {
     const res = await fetch("besede.txt")
@@ -57,6 +58,8 @@ function newGame() {
     finished = false
     statusEl.textContent = "Vnesi 5-črkovno besedo"
     buildBoard()
+
+    mobileInput.focus()
 }
 
 function addLetter(letter) {
@@ -176,6 +179,21 @@ document.addEventListener("keydown", (e) => {
     if (/^[A-ZČŠŽ]$/.test(char)) {
         addLetter(char)
     }
+})
+
+mobileInput.addEventListener("input", () => {
+
+    const char = mobileInput.value.toUpperCase()
+
+    if (/^[A-ZČŠŽ]$/.test(char)) {
+        addLetter(char)
+    }
+
+    mobileInput.value = ""
+})
+
+document.addEventListener("click", () => {
+    mobileInput.focus()
 })
 
 newGameBtn.addEventListener("click", newGame)
