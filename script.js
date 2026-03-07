@@ -60,6 +60,7 @@ function newGame() {
     currentRow = 0
     currentCol = 0
     finished = false
+
     statusEl.textContent = "Vnesi 5-črkovno besedo"
     buildBoard()
     mobileInput.value = ""
@@ -70,8 +71,7 @@ function addLetter(letter) {
     if (currentCol >= COLS) return
 
     board[currentRow][currentCol] = letter
-    const cell = getCell(currentRow, currentCol)
-    cell.textContent = letter
+    getCell(currentRow, currentCol).textContent = letter
     currentCol++
 }
 
@@ -81,8 +81,7 @@ function removeLetter() {
 
     currentCol--
     board[currentRow][currentCol] = ""
-    const cell = getCell(currentRow, currentCol)
-    cell.textContent = ""
+    getCell(currentRow, currentCol).textContent = ""
 }
 
 function getCell(r, c) {
@@ -109,7 +108,6 @@ function evaluateGuess(guess, target) {
             if (!targetUsed[j] && guess[i] === target[j]) {
                 result[i] = "present"
                 targetUsed[j] = true
-                guessUsed[i] = true
                 break
             }
         }
@@ -215,8 +213,7 @@ mobileInput.addEventListener("input", () => {
         return
     }
 
-    const value = mobileInput.value.toUpperCase()
-    const letters = value.replace(/[^A-ZČŠŽ]/g, "")
+    const letters = mobileInput.value.toUpperCase().replace(/[^A-ZČŠŽ]/g, "")
 
     for (const char of letters) {
         addLetter(char)
@@ -227,6 +224,7 @@ mobileInput.addEventListener("input", () => {
 
 boardEl.addEventListener("click", focusMobileInput)
 statusEl.addEventListener("click", focusMobileInput)
+
 document.body.addEventListener("click", (e) => {
     if (e.target !== newGameBtn) {
         focusMobileInput()
