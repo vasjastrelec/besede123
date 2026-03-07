@@ -12,7 +12,7 @@ let finished = false
 const boardEl = document.getElementById("board")
 const statusEl = document.getElementById("status")
 const newGameBtn = document.getElementById("newGame")
-const keyboardEl = document.getElementById("keyboard")
+const mobileInput = document.getElementById("mobileInput")
 
 async function loadWords() {
     const res = await fetch("besede.txt")
@@ -46,53 +46,7 @@ function buildBoard() {
     }
 }
 
-function buildKeyboard() {
-
-    const rows = [
-        "QWERTZUIOP",
-        "ASDFGHJKLČ",
-        "ENTERYXCVBNMŠŽ⌫"
-    ]
-
-    keyboardEl.innerHTML = ""
-
-    rows.forEach(r => {
-
-        const row = document.createElement("div")
-        row.style.margin = "5px"
-
-        for (let ch of r) {
-
-            const btn = document.createElement("button")
-            btn.textContent = ch
-            btn.style.margin = "2px"
-
-            btn.onclick = () => {
-
-                if (finished) return
-
-                if (ch === "ENTER") {
-                    submitGuess()
-                    return
-                }
-
-                if (ch === "⌫") {
-                    removeLetter()
-                    return
-                }
-
-                addLetter(ch)
-            }
-
-            row.appendChild(btn)
-        }
-
-        keyboardEl.appendChild(row)
-    })
-}
-
 function newGame() {
-
     if (words.length === 0) {
         statusEl.textContent = "Besede niso naložene"
         return
@@ -102,32 +56,26 @@ function newGame() {
     currentRow = 0
     currentCol = 0
     finished = false
-
     statusEl.textContent = "Vnesi 5-črkovno besedo"
-
     buildBoard()
+
+    mobileInput.focus()
 }
 
 function addLetter(letter) {
-
     if (currentCol >= COLS) return
 
     board[currentRow][currentCol] = letter
-
     const cell = getCell(currentRow, currentCol)
     cell.textContent = letter
-
     currentCol++
 }
 
 function removeLetter() {
-
     if (currentCol <= 0) return
 
     currentCol--
-
     board[currentRow][currentCol] = ""
-
     const cell = getCell(currentRow, currentCol)
     cell.textContent = ""
 }
@@ -137,13 +85,11 @@ function getCell(r, c) {
 }
 
 function evaluateGuess(guess, target) {
-
     let result = Array(COLS).fill("absent")
     let targetUsed = Array(COLS).fill(false)
     let guessUsed = Array(COLS).fill(false)
 
     for (let i = 0; i < COLS; i++) {
-
         if (guess[i] === target[i]) {
             result[i] = "correct"
             targetUsed[i] = true
@@ -152,13 +98,10 @@ function evaluateGuess(guess, target) {
     }
 
     for (let i = 0; i < COLS; i++) {
-
         if (guessUsed[i]) continue
 
         for (let j = 0; j < COLS; j++) {
-
             if (!targetUsed[j] && guess[i] === target[j]) {
-
                 result[i] = "present"
                 targetUsed[j] = true
                 guessUsed[i] = true
@@ -171,18 +114,14 @@ function evaluateGuess(guess, target) {
 }
 
 function paintRow(rowIndex, result) {
-
     for (let i = 0; i < COLS; i++) {
-
         const cell = getCell(rowIndex, i)
         cell.classList.add(result[i])
     }
 }
 
 function submitGuess() {
-
     if (currentCol !== COLS) {
-
         statusEl.textContent = "Beseda mora imeti 5 črk"
         return
     }
@@ -190,11 +129,9 @@ function submitGuess() {
     const guess = board[currentRow].join("")
 
     if (!validWords.has(guess)) {
-
         statusEl.textContent = "Te besede ni v bazi"
 
         for (let c = 0; c < COLS; c++) {
-
             board[currentRow][c] = ""
             getCell(currentRow, c).textContent = ""
         }
@@ -207,7 +144,6 @@ function submitGuess() {
     paintRow(currentRow, result)
 
     if (guess === targetWord) {
-
         statusEl.textContent = "Bravo. Uganil si besedo."
         finished = true
         return
@@ -217,7 +153,6 @@ function submitGuess() {
     currentCol = 0
 
     if (currentRow >= ROWS) {
-
         statusEl.textContent = "Konec igre. Beseda je bila: " + targetWord
         finished = true
         return
@@ -227,7 +162,6 @@ function submitGuess() {
 }
 
 document.addEventListener("keydown", (e) => {
-
     if (finished) return
 
     if (e.key === "Enter") {
@@ -247,9 +181,21 @@ document.addEventListener("keydown", (e) => {
     }
 })
 
+mobileInput.addEventListener("input", () => {
+
+    const char = mobileInput.value.toUpperCase()
+
+    if (/^[A-ZČŠŽ]$/.test(char)) {
+        addLetter(char)
+    }
+
+    mobileInput.value = ""
+})
+
+document.addEventListener("click", () => {
+    mobileInput.focus()
+})
+
 newGameBtn.addEventListener("click", newGame)
 
-loadWords().then(() => {
-    buildKeyboard()
-    newGame()
-})
+loadWords().then(newGame)
