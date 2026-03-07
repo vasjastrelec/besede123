@@ -162,6 +162,9 @@ function submitGuess() {
 }
 
 document.addEventListener("keydown", (e) => {
+
+    if (document.activeElement === mobileInput) return
+
     if (finished) return
 
     if (e.key === "Enter") {
