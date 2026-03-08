@@ -61,7 +61,7 @@ function newGame() {
     currentCol = 0
     finished = false
 
-    statusEl.textContent = "Vnesi 5-črkovno besedo"
+    statusEl.textContent = "Ugani 5-črkovno besedo"
     buildBoard()
     mobileInput.value = ""
 }
